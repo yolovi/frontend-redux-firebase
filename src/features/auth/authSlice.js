@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import * as authService from "./authService.js"; //TODO: explicar esta linea
+// con * --> importa todo lo exportado desde authService.js bajo un mismo nombre (authService) en vez de desestructurar uno a uno.
+import * as authService from "./authService.js";
 
 const initialState = {
   user: null,
@@ -13,7 +14,7 @@ export const registerUser = createAsyncThunk(
     try {
       return await authService.register(formData);
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.message); //TODO: de donde se recoge el mensaje --> Firebase (no hay otro middlware de error)
+      return thunkAPI.rejectWithValue(err.message); // recoge el mensaje que lanza Firebase (no hay otro middlware de error)- se gestiona con rejectWithValue
     }
   }
 );
@@ -47,6 +48,13 @@ const authSlice = createSlice({
     resetAuthError: (state) => {
       state.error = null;
     },
+    loginUserFromListener: (state, action) => {
+      state.user = action.payload;
+    }, 
+    logoutRedux: (state) => {
+      state.user = null;
+      state.error = null;
+    }, 
   },
   extraReducers: (builder) => {
     builder
@@ -67,6 +75,7 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
+        console.log(action.payload.name);
         state.loading = false;
         state.user = action.payload;
       })
@@ -74,9 +83,22 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(logoutUser.fulfilled, (state) => (state.user = null));
+      .addCase(logoutUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.user = null;
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
 
-export const { resetAuthError } = authSlice.actions;
+export const { loginUserFromListener, logoutRedux, resetAuthError } =
+  authSlice.actions;
 export default authSlice.reducer;
