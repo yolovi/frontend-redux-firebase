@@ -1,22 +1,31 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser, resetAuthError } from "../../../features/auth/authSlice";
 import styles from "./Form.module.css";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   // const { email, password } = form; //podemos desestrucutrar para no tener que escribir form.name, etc.
   const dispatch = useDispatch();
-  const { loading, error } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+  const { loading, error, user } = useSelector((state) => state.auth);
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("formData", form); //comprobar siempre antes de continuar.
+    //console.log("formData", form); //comprobar siempre antes de continuar.
     dispatch(loginUser(form));
   };
+
+  useEffect(() => {
+    if (user) {
+      // console.log("user", user);
+      navigate("/profile");
+    }
+  }, [user, navigate]);
 
   //  .unwrap() te ayuda a capturar errores directamente en el componente, sin depender solo del slice.
   // const handleSubmit = (e) => {

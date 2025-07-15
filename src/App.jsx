@@ -1,11 +1,9 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import "./App.css";
-import LoginPage from "./pages/Auth/LoginPage";
-import RegisterPage from "./pages/Auth/RegisterPage";
-import Header from "./components/common/Header/Header";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { watchAuthChanges } from "./features/auth/authService";
-import { useEffect } from "react";
+import AppRouter from "./routes/AppRouter";
+import "./App.css";
+import Layout from "./components/common/Layout/Layout";
 
 function App() {
   const dispatch = useDispatch();
@@ -17,15 +15,9 @@ function App() {
   }, [dispatch]);
 
   return (
-    <div className="App">
-      <BrowserRouter>
-        <Header />
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <Layout>
+      <AppRouter />
+    </Layout>
   );
 }
 
