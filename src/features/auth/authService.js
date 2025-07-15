@@ -5,7 +5,7 @@ import {
   signOut,
 } from "firebase/auth";
 import { doc, setDoc, serverTimestamp, getDoc } from "firebase/firestore";
-import { auth, db } from "../../../firebase/config";
+import { auth, db } from "../../firebase/config";
 import { loginUserFromListener, logoutRedux } from "./authSlice";
 
 export const register = async ({ email, password, name }) => {
